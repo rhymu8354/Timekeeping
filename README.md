@@ -1,6 +1,7 @@
-# Serialization
+# Timekeeping
 
-This is a library providing facilities to convert objects to and from a sequence of bytes for the purpose of storing them in files or conveying them between programs.
+This is a library of classes and interfaces dealing with tracking time
+and scheduling work.
 
 ## Supported platforms / recommended toolchains
 
@@ -23,12 +24,6 @@ There are two distinct steps in the build process:
 
 * [CMake](https://cmake.org/) version 3.8 or newer
 * C++ toolchain compatible with CMake for your development platform (e.g. [Visual Studio](https://www.visualstudio.com/) on Windows)
-
-### Dependencies
-
-* [SystemAbstractions](https://github.com/rhymu8354/SystemAbstractions.git) - a
-  cross-platform adapter library for system services whose APIs vary from one
-  operating system to another
 
 ### Build system generation
 
