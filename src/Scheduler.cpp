@@ -7,10 +7,10 @@
  */
 
 #include <condition_variable>
+#include <map>
 #include <math.h>
 #include <mutex>
 #include <queue>
-#include <set>
 #include <thread>
 #include <Timekeeping/Scheduler.hpp>
 
@@ -52,7 +52,7 @@ namespace Timekeeping {
         bool stopWorker = false;
         std::recursive_mutex mutex;
         int nextToken = 1;
-        std::set< int > canceledCallbacks;
+        std::map< int, bool > isCallbackCanceled;
 
         // Lifecycle
 
@@ -86,10 +86,7 @@ namespace Timekeeping {
                     const auto& nextInSchedule = scheduledCallbacks.top();
                     const auto now = clock->GetCurrentTime();
                     const auto waitTimeSeconds = nextInSchedule.due - now;
-                    const auto isNotCanceled = (
-                        canceledCallbacks.find(nextInSchedule.token)
-                        == canceledCallbacks.end()
-                    );
+                    const auto isNotCanceled = !isCallbackCanceled[nextInSchedule.token];
                     if (
                         (waitTimeSeconds > 0)
                         && isNotCanceled
@@ -102,9 +99,11 @@ namespace Timekeeping {
                         );
                     } else if (isNotCanceled) {
                         auto callback = nextInSchedule.callback;
+                        (void)isCallbackCanceled.erase(nextInSchedule.token);
                         scheduledCallbacks.pop();
                         callback();
                     } else {
+                        (void)isCallbackCanceled.erase(nextInSchedule.token);
                         scheduledCallbacks.pop();
                     }
                 }
@@ -137,6 +136,7 @@ namespace Timekeeping {
         scheduledCallback.due = due;
         std::lock_guard< decltype(impl_->mutex) > lock(impl_->mutex);
         const auto token = impl_->nextToken++;
+        impl_->isCallbackCanceled[token] = false;
         scheduledCallback.token = token;
         impl_->scheduledCallbacks.push(std::move(scheduledCallback));
         impl_->wakeWorker.notify_one();
@@ -145,7 +145,10 @@ namespace Timekeeping {
 
     void Scheduler::Cancel(int token) {
         std::lock_guard< decltype(impl_->mutex) > lock(impl_->mutex);
-        (void)impl_->canceledCallbacks.insert(token);
+        auto isCallbackCanceledEntry = impl_->isCallbackCanceled.find(token);
+        if (isCallbackCanceledEntry != impl_->isCallbackCanceled.end()) {
+            isCallbackCanceledEntry->second = true;
+        }
     }
 
     void Scheduler::WakeUp() {
