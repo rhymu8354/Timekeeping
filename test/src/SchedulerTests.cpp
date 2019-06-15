@@ -80,12 +80,12 @@ TEST_F(SchedulerTests, Schedule) {
     (void)scheduler.Schedule(callback, 10.0);
     AdvanceMockClock(5.0);
     const auto wasCalledEarly = (
-        calledBackFuture.wait_for(std::chrono::seconds(0))
+        calledBackFuture.wait_for(std::chrono::milliseconds(100))
         == std::future_status::ready
     );
     AdvanceMockClock(5.001);
     const auto wasCalledOnTime = (
-        calledBackFuture.wait_for(std::chrono::seconds(0))
+        calledBackFuture.wait_for(std::chrono::milliseconds(100))
         == std::future_status::ready
     );
 
