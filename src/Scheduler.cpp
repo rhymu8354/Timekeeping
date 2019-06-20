@@ -101,7 +101,9 @@ namespace Timekeeping {
                         auto callback = nextInSchedule.callback;
                         (void)isCallbackCanceled.erase(nextInSchedule.token);
                         scheduledCallbacks.pop();
+                        lock.unlock();
                         callback();
+                        lock.lock();
                     } else {
                         (void)isCallbackCanceled.erase(nextInSchedule.token);
                         scheduledCallbacks.pop();
