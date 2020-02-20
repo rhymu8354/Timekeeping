@@ -122,6 +122,10 @@ namespace Timekeeping {
     {
     }
 
+    std::shared_ptr< Clock > Scheduler::GetClock() const {
+        return impl_->clock;
+    }
+
     void Scheduler::SetClock(std::shared_ptr< Clock > clock) {
         impl_->clock = clock;
     }

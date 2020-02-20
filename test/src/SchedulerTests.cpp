@@ -133,3 +133,15 @@ TEST_F(SchedulerTests, ScheduleWithoutClock) {
     EXPECT_EQ(0, token);
     EXPECT_FALSE(wasCalledOnTime);
 }
+
+TEST_F(SchedulerTests, GetClock) {
+    // Arrange
+    scheduler = Timekeeping::Scheduler();
+    scheduler.SetClock(mockClock);
+
+    // Act
+    const auto clock = scheduler.GetClock();
+
+    // Assert
+    EXPECT_EQ(mockClock, clock);
+}

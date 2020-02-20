@@ -44,6 +44,16 @@ namespace Timekeeping {
         Scheduler();
 
         /**
+         * Return the clock object used to know when to call scheduled
+         * callbacks.
+         *
+         * @return
+         *     The the object used to know when to call scheduled
+         *     callbacks is returned.
+         */
+        std::shared_ptr< Clock > GetClock() const;
+
+        /**
          * Set the clock object used to know when to call scheduled callbacks.
          *
          * @param[in] clock
