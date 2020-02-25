@@ -145,25 +145,3 @@ TEST_F(SchedulerTests, GetClock) {
     // Assert
     EXPECT_EQ(mockClock, clock);
 }
-
-TEST_F(SchedulerTests, Release_From_Callback) {
-    // Arrange
-    scheduler = Timekeeping::Scheduler();
-    scheduler.SetClock(mockClock);
-    std::promise< void > calledBack;
-    const auto callback = [&]{
-        scheduler = Timekeeping::Scheduler();
-        calledBack.set_value();
-    };
-    (void)scheduler.Schedule(callback, 10.0);
-
-    // Act
-    AdvanceMockClock(10.01);
-    const auto wasCalledBack = (
-        calledBack.get_future().wait_for(std::chrono::milliseconds(100))
-        == std::future_status::ready
-    );
-
-    // Assert
-    EXPECT_TRUE(wasCalledBack);
-}

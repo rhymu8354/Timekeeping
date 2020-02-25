@@ -64,11 +64,7 @@ namespace Timekeeping {
             stopWorker = true;
             wakeWorker.notify_all();
             lock.unlock();
-            if (std::this_thread::get_id() == worker.get_id()) {
-                worker.detach();
-            } else {
-                worker.join();
-            }
+            worker.join();
         }
         Impl(const Impl&) noexcept = delete;
         Impl(Impl&&) = default;
