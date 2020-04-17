@@ -25,7 +25,7 @@ namespace {
 
         // Methods
 
-        // RealmServer::Clock
+        // Clock
 
         virtual double GetCurrentTime() override {
             return currentTime;
